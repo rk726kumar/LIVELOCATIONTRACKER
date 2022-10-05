@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>googlemapapi</title>
+  <link rel="stylesheet" href="app.css">
+  <!-- <script src="https://kit.fontawesome.com/51e3ccdca7.js" crossorigin="anonymous"></script> -->
+</head>
+
+<body>
+  <h1>google maps</h1>
+  <div id="map" style="width:100%;height:400px"></div>
+  <div>
+    <form id="contactForm">
+      <div class="alert">location saved</div>
+      <label for="fname"></label><br>
+      <input type="text" id="fname" name="fname"><br>
+
+      <input id="button" type="submit" value="SEND">
+    </form>
+  </div>
+
+
+  <script>
+
+
+    function initMap() {
+      var test = { lat: 9.9312, lng: 76.2673 };
+      // var test = { };
+      var map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 4,
+        center: test
+      });
+      var marker = new google.maps.Marker({
+        position: test,
+        map: map,
+        icon: './pin.png'
+      });
+
+      infoWindow = new google.maps.InfoWindow();
+
+      const locationButton = document.createElement("button");
+
+      locationButton.textContent = "Pan to Current Location";
+      locationButton.classList.add("custom-map-control-button");
+      map.controls[google.maps.ControlPosition.BOTTOM_CENTER].push(locationButton);
+      locationButton.addEventListener("click", () => {
+        // Try HTML5 geolocation.
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const pos = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude,
+              };
+              marker.setPosition(new google.maps.LatLng(pos.lat, pos.lng));
+              const str = JSON.stringify(pos);
+              console.log(str);
+              console.log(pos.lat);
+              console.log(pos.lng);
+
+              const form = document.getElementById("fname");
+              form.value = str;
+
+              infoWindow.setPosition(pos);
+              infoWindow.setContent(str);
+              infoWindow.open(map);
+              map.setCenter(pos);
+              // Listen for form submit
+            },
+            () => {
+              handleLocationError(true, infoWindow, map.getCenter());
+            }
+          );
+        } else {
+          handleLocationError(false, infoWindow, map.getCenter());
+        }
+      });
+    }
+
+    function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+      infoWindow.setPosition(pos);
+      infoWindow.setContent(
+        browserHasGeolocation
+          ? "Error: The Geolocation service failed."
+          : "Error: Your browser doesn't support geolocation."
+      );
+      infoWindow.open(map);
+
+    }
+
+
+
+  </script>
+  <script src=https://cdnjs.cloudflare.com/ajax/libs/firebase/7.14.1-0/firebase.js></script>
+  <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA7MG8-dWp6yUD7q2jnPVRatSWPpj2zCvU&callback=initMap">
+    </script>
+  <script src="./app.js"></script>
+</body>
+
+</html>
